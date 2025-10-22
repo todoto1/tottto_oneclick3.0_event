@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>투두투 둣또 이벤트</title>
+    <title>투두투 툿또 이벤트</title>
     <style>
         * {
             margin: 0;
@@ -428,9 +428,14 @@
                 return;
             }
 
-            // 데이터 수집
+            // 데이터 수집 (Make.com을 위해 배열을 개별 필드로 분리)
             const data = {
-                numbers: selectedNumbers,
+                number1: selectedNumbers[0] || 0,
+                number2: selectedNumbers[1] || 0,
+                number3: selectedNumbers[2] || 0,
+                number4: selectedNumbers[3] || 0,
+                number5: selectedNumbers[4] || 0,
+                number6: selectedNumbers[5] || 0,
                 nickname: nickname,
                 phone: phone,
                 timestamp: new Date().toISOString()
@@ -479,7 +484,7 @@
         // 초기화
         createNumberButtons();
 
-        // Make.com Webhook URL (Webhook URL 삽입)
+        // Make.com Webhook URL (여기에 여러분의 Webhook URL을 넣으세요!)
         const MAKE_WEBHOOK_URL = 'https://hook.us1.make.com/ga884wl9m0sn1aetmua62smk87sk9ywa';
 
         // Notion에 데이터 전송
@@ -508,4 +513,3 @@
     </script>
 </body>
 </html>
-
