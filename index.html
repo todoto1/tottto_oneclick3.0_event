@@ -145,6 +145,27 @@
             border-color: #2196F3;
         }
 
+        .choice-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .choice-btn:hover {
+            border-color: #2196F3;
+        }
+
+        .choice-btn.selected {
+            background: #2196F3;
+            color: white;
+            border-color: #2196F3;
+        }
+
         .submit-btn {
             width: 100%;
             background: #2196F3;
@@ -276,7 +297,19 @@
             </div>
 
             <div class="form-group">
-                <label for="phone">2. 안내받을 핸드폰 번호를 적어주세요</label>
+                <label>2. 알림 신청하고 오픈런을 이미 하셨나요?</label>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="button" class="choice-btn" data-value="했다" id="choice-yes">
+                        했다
+                    </button>
+                    <button type="button" class="choice-btn" data-value="안했다" id="choice-no">
+                        안했다
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">3. 안내받을 핸드폰 번호를 적어주세요</label>
                 <input type="tel" id="phone" placeholder="010-0000-0000" required>
             </div>
 
@@ -298,6 +331,7 @@
     <script>
         // 상태 관리
         let selectedNumbers = [];
+        let selectedChoice = '';
         const MAX_SELECTION = 6;
         const MAX_NUMBER = 42;
 
@@ -312,6 +346,8 @@
         const closeBtn = document.getElementById('closeBtn');
         const nicknameInput = document.getElementById('nickname');
         const phoneInput = document.getElementById('phone');
+        const choiceYes = document.getElementById('choice-yes');
+        const choiceNo = document.getElementById('choice-no');
 
         // 번호 버튼 생성
         function createNumberButtons() {
@@ -414,6 +450,21 @@
             e.target.value = formatPhoneNumber(e.target.value);
         });
 
+        // 선택 버튼 클릭 이벤트
+        choiceYes.addEventListener('click', () => {
+            choiceYes.classList.add('selected');
+            choiceNo.classList.remove('selected');
+            selectedChoice = '✅했어요';
+            hideError();
+        });
+
+        choiceNo.addEventListener('click', () => {
+            choiceNo.classList.add('selected');
+            choiceYes.classList.remove('selected');
+            selectedChoice = '할 예정이에요';
+            hideError();
+        });
+
         // 응모하기 제출
         async function submitForm() {
             // 유효성 검사
@@ -427,6 +478,11 @@
 
             if (!nickname) {
                 showError('텀블벅 닉네임을 입력해주세요.');
+                return;
+            }
+
+            if (!selectedChoice) {
+                showError('오픈런 여부를 선택해주세요.');
                 return;
             }
 
@@ -451,6 +507,7 @@
                 number5: selectedNumbers[4] || 0,
                 number6: selectedNumbers[5] || 0,
                 nickname: nickname,
+                openrun_status: selectedChoice,
                 phone: phone,
                 timestamp: new Date().toISOString()
             };
@@ -490,6 +547,9 @@
             });
             nicknameInput.value = '';
             phoneInput.value = '';
+            selectedChoice = '';
+            choiceYes.classList.remove('selected');
+            choiceNo.classList.remove('selected');
             updateDisplay();
         }
 
@@ -532,5 +592,3 @@
     </script>
 </body>
 </html>
-
-
