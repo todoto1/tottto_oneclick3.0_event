@@ -49,28 +49,35 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 10px;
             margin-bottom: 30px;
+            justify-items: center;
         }
 
         .number-button {
-            aspect-ratio: 1;
-            border: none;
-            background: #e0e0e0;
-            border-radius: 50px;
-            font-size: 18px;
+            width: 26px;
+            height: 45px;
+            border: 2px solid #c62828;
+            background: white;
+            border-radius: 23px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
-            color: #333;
+            color: #c62828;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .number-button:hover {
-            background: #d0d0d0;
+            background: #ffebee;
             transform: scale(1.05);
+            border-color: #b71c1c;
         }
 
         .number-button.selected {
-            background: #2196F3;
+            background: #000;
             color: white;
+            border-color: #000;
         }
 
         .number-button:disabled {
@@ -243,7 +250,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>번호 6개 선택 완료</h1>
+            <h1>투두투 원클릭 가계부 3.0 이벤트</h1>
             <div class="selection-status" id="selectionStatus">0/6 선택됨</div>
         </div>
 
