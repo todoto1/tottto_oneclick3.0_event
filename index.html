@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: #f5f5f5;
+            background: white;
             padding: 20px;
             min-height: 100vh;
         }
@@ -428,6 +428,13 @@
                 return;
             }
 
+            // 중복 응모 체크 (로컬 스토리지)
+            const submittedNicknames = JSON.parse(localStorage.getItem('submittedNicknames') || '[]');
+            if (submittedNicknames.includes(nickname.toLowerCase())) {
+                showError('이미 응모한 닉네임입니다. 1인당 1회만 응모 가능합니다.');
+                return;
+            }
+
             // 데이터 수집 (Make.com을 위해 배열을 개별 필드로 분리)
             const data = {
                 number1: selectedNumbers[0] || 0,
@@ -453,6 +460,11 @@
             submitBtn.textContent = '이 번호로 응모하기';
 
             if (success) {
+                // 닉네임을 로컬 스토리지에 저장 (중복 방지)
+                const submittedNicknames = JSON.parse(localStorage.getItem('submittedNicknames') || '[]');
+                submittedNicknames.push(nickname.toLowerCase());
+                localStorage.setItem('submittedNicknames', JSON.stringify(submittedNicknames));
+                
                 // 성공 모달 표시
                 successModal.classList.add('show');
             }
