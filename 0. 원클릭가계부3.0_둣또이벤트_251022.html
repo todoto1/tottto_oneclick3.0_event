@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>투두투 둣또 이벤트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2196F3;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .selection-status {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .number-button {
+            aspect-ratio: 1;
+            border: none;
+            background: #e0e0e0;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #333;
+        }
+
+        .number-button:hover {
+            background: #d0d0d0;
+            transform: scale(1.05);
+        }
+
+        .number-button.selected {
+            background: #2196F3;
+            color: white;
+        }
+
+        .number-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .auto-select {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auto-select-btn {
+            background: white;
+            border: 2px solid #2196F3;
+            color: #2196F3;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .auto-select-btn:hover {
+            background: #f0f7ff;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: #1976D2;
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .selected-numbers {
+            background: #f0f7ff;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .selected-numbers-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .selected-numbers-display {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2196F3;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .success-modal.show {
+            display: flex;
+        }
+
+        .success-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            margin: 20px;
+        }
+
+        .success-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .success-content h2 {
+            color: #2196F3;
+            margin-bottom: 15px;
+        }
+
+        .success-content p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>번호 6개 선택 완료</h1>
+            <div class="selection-status" id="selectionStatus">0/6 선택됨</div>
+        </div>
+
+        <div class="selected-numbers" id="selectedDisplay">
+            <div class="selected-numbers-label">선택한 번호</div>
+            <div class="selected-numbers-display" id="selectedNumbersText">번호를 선택해주세요</div>
+        </div>
+
+        <div class="number-grid" id="numberGrid"></div>
+
+        <div class="auto-select">
+            <button class="auto-select-btn" id="autoSelectBtn">
+                🎲 자동 선택하기
+            </button>
+        </div>
+
+        <div class="form-section">
+            <h2>응모자 정보</h2>
+            
+            <div class="form-group">
+                <label for="nickname">1. 텀블벅 닉네임을 적어주세요</label>
+                <input type="text" id="nickname" placeholder="닉네임 입력" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">2. 안내받을 핸드폰 번호를 적어두세요</label>
+                <input type="tel" id="phone" placeholder="010-0000-0000" required>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <button class="submit-btn" id="submitBtn">이 번호로 응모하기</button>
+    </div>
+
+    <div class="success-modal" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">✅</div>
+            <h2>응모 완료!</h2>
+            <p>선택하신 번호로 응모가 완료되었습니다.</p>
+            <button class="close-btn" id="closeBtn">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // 상태 관리
+        let selectedNumbers = [];
+        const MAX_SELECTION = 6;
+        const MAX_NUMBER = 42;
+
+        // DOM 요소
+        const numberGrid = document.getElementById('numberGrid');
+        const selectionStatus = document.getElementById('selectionStatus');
+        const selectedNumbersText = document.getElementById('selectedNumbersText');
+        const autoSelectBtn = document.getElementById('autoSelectBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successModal = document.getElementById('successModal');
+        const closeBtn = document.getElementById('closeBtn');
+        const nicknameInput = document.getElementById('nickname');
+        const phoneInput = document.getElementById('phone');
+
+        // 번호 버튼 생성
+        function createNumberButtons() {
+            for (let i = 1; i <= MAX_NUMBER; i++) {
+                const button = document.createElement('button');
+                button.className = 'number-button';
+                button.textContent = i;
+                button.dataset.number = i;
+                button.addEventListener('click', () => toggleNumber(i, button));
+                numberGrid.appendChild(button);
+            }
+        }
+
+        // 번호 선택/해제
+        function toggleNumber(number, button) {
+            const index = selectedNumbers.indexOf(number);
+            
+            if (index > -1) {
+                // 이미 선택된 번호 - 해제
+                selectedNumbers.splice(index, 1);
+                button.classList.remove('selected');
+            } else {
+                // 새로운 번호 선택
+                if (selectedNumbers.length >= MAX_SELECTION) {
+                    showError('최대 6개까지만 선택할 수 있습니다.');
+                    return;
+                }
+                selectedNumbers.push(number);
+                button.classList.add('selected');
+            }
+
+            selectedNumbers.sort((a, b) => a - b);
+            updateDisplay();
+        }
+
+        // 디스플레이 업데이트
+        function updateDisplay() {
+            selectionStatus.textContent = `${selectedNumbers.length}/6 선택됨`;
+            
+            if (selectedNumbers.length === 0) {
+                selectedNumbersText.textContent = '번호를 선택해주세요';
+            } else {
+                selectedNumbersText.textContent = selectedNumbers.join(', ');
+            }
+
+            hideError();
+        }
+
+        // 자동 선택
+        function autoSelect() {
+            // 기존 선택 초기화
+            selectedNumbers = [];
+            document.querySelectorAll('.number-button.selected').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            // 랜덤 6개 선택
+            const numbers = [];
+            while (numbers.length < MAX_SELECTION) {
+                const random = Math.floor(Math.random() * MAX_NUMBER) + 1;
+                if (!numbers.includes(random)) {
+                    numbers.push(random);
+                }
+            }
+
+            numbers.sort((a, b) => a - b);
+            selectedNumbers = numbers;
+
+            // 버튼 상태 업데이트
+            numbers.forEach(num => {
+                const button = document.querySelector(`[data-number="${num}"]`);
+                if (button) {
+                    button.classList.add('selected');
+                }
+            });
+
+            updateDisplay();
+        }
+
+        // 에러 메시지 표시
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // 에러 메시지 숨기기
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        // 전화번호 포맷팅
+        function formatPhoneNumber(value) {
+            const numbers = value.replace(/[^\d]/g, '');
+            if (numbers.length <= 3) return numbers;
+            if (numbers.length <= 7) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+            return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
+        }
+
+        phoneInput.addEventListener('input', (e) => {
+            e.target.value = formatPhoneNumber(e.target.value);
+        });
+
+        // 응모하기 제출
+        async function submitForm() {
+            // 유효성 검사
+            if (selectedNumbers.length !== MAX_SELECTION) {
+                showError('6개의 번호를 모두 선택해주세요.');
+                return;
+            }
+
+            const nickname = nicknameInput.value.trim();
+            const phone = phoneInput.value.trim();
+
+            if (!nickname) {
+                showError('텀블벅 닉네임을 입력해주세요.');
+                return;
+            }
+
+            if (!phone) {
+                showError('핸드폰 번호를 입력해주세요.');
+                return;
+            }
+
+            // 데이터 수집
+            const data = {
+                numbers: selectedNumbers,
+                nickname: nickname,
+                phone: phone,
+                timestamp: new Date().toISOString()
+            };
+
+            console.log('제출된 데이터:', data);
+
+            // Make.com Webhook으로 데이터 전송
+            submitBtn.disabled = true;
+            submitBtn.textContent = '전송 중...';
+
+            const success = await sendToNotion(data);
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = '이 번호로 응모하기';
+
+            if (success) {
+                // 성공 모달 표시
+                successModal.classList.add('show');
+            }
+
+            // 폼 초기화
+            setTimeout(() => {
+                resetForm();
+            }, 2000);
+        }
+
+        // 폼 초기화
+        function resetForm() {
+            selectedNumbers = [];
+            document.querySelectorAll('.number-button.selected').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            nicknameInput.value = '';
+            phoneInput.value = '';
+            updateDisplay();
+        }
+
+        // 이벤트 리스너
+        autoSelectBtn.addEventListener('click', autoSelect);
+        submitBtn.addEventListener('click', submitForm);
+        closeBtn.addEventListener('click', () => {
+            successModal.classList.remove('show');
+        });
+
+        // 초기화
+        createNumberButtons();
+
+        // Make.com Webhook URL (여기에 여러분의 Webhook URL을 넣으세요!)
+        const MAKE_WEBHOOK_URL = 'YOUR_MAKE_WEBHOOK_URL_HERE';
+
+        // Notion에 데이터 전송
+        async function sendToNotion(data) {
+            try {
+                const response = await fetch(MAKE_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('데이터 전송 실패');
+                }
+
+                console.log('Notion에 데이터 저장 성공!');
+                return true;
+            } catch (error) {
+                console.error('에러:', error);
+                showError('데이터 전송 중 오류가 발생했습니다. 다시 시도해주세요.');
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>
